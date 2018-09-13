@@ -1,0 +1,78 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "/usr/include",
+                "/usr/local/include"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": "",
+                "path": [
+                    "/usr/include",
+                    "/usr/local/include",
+                    "${workspaceRoot}"
+                ]
+            },
+            "intelliSenseMode": "clang-x64",
+            "macFrameworkPath": [
+                "/System/Library/Frameworks",
+                "/Library/Frameworks"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceRoot}/nuttx/include",
+                "${workspaceRoot}/nuttx/arch/arm/src/stm32",
+                "${workspaceRoot}/nuttx/arch/arm/src/smartfusion2",
+                "${workspaceRoot}/nuttx/arch/arm/src/chip",
+                "${workspaceRoot}/nuttx/arch/arm/src/common",
+                "${workspaceRoot}/apps/include",
+                "${workspaceRoot}/apps/salem_lora/lora_master/lora/inc",
+                "${workspaceRoot}/apps/salem_lora/lora_master/ui/inc"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": "",
+                "path": [
+                    "${workspaceRoot}/nuttx/include",
+                    "${workspaceRoot}/nuttx/arch/arm/src/stm32",
+                    "${workspaceRoot}/nuttx/arch/arm/src/smartfusion2",
+                    "${workspaceRoot}/nuttx/arch/arm/src/chip",
+                    "${workspaceRoot}/nuttx/arch/arm/src/common",
+                    "${workspaceRoot}/apps/include",
+                    "${workspaceRoot}/apps/salem_lora/lora_master/lora/inc",
+                    "${workspaceRoot}/apps/salem_lora/lora_master/ui/inc"
+                ]
+            },
+            "intelliSenseMode": "clang-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include/*"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": "",
+                "path": [
+                    "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include/*",
+                    "${workspaceRoot}"
+                ]
+            },
+            "intelliSenseMode": "msvc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
