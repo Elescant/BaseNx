@@ -36,7 +36,7 @@
 -include $(TOPDIR)/Make.defs
 
 ASRCS =
-CSRCS = stm32_boot.c stm32_mmcsd.c
+CSRCS = stm32_boot.c stm32_mmcsd.c stm32_ssd1306.c
 #stm32_spi.c stm32_usbdev.c stm32_mmcsd.c
 
 # ifeq ($(CONFIG_STM32_FSMC),y)

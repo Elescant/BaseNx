@@ -47,88 +47,143 @@
 #include <sys/boardctl.h>
 #include <sys/mount.h>
 #include <fcntl.h>
+#include "lcd.h"
+#include <errno.h>
+#include "font.h"
 
-int get_fontdata(int fd,char *buf,char * fontcode);
+void test_lcd(void);
+void uart_chinese(void *buf);
+int get_fontdata(int fd, char *buf, char *fontcode);
 
 int main(void)
 {
-    int ret,fd;
-    char fontbuf[32]={0};
+  int ret, fd, txtfd;
+  char fontbuf[4] = {0};
+  char wordbuf[32] = {0};//32 bytes per word 
+  struct nxgl_point_s pos = {0, 0};
 
-    boardctl(BOARDIOC_INIT,0);
+  lcd_init();
+  boardctl(BOARDIOC_INIT, 0);
 
-    ret = mount("/dev/mmcsd0","/mnt/sd0","vfat",0,NULL);
-    if(ret < 0)
-    {
-      printf("mount failed\n");
-    }else
-    {
-      printf("mount success\n");
-    }
-    fd = open("/mnt/sd0/gbk_songti_16x16.Dzk", O_RDONLY,0666);
-    printf("fd %d\n",fd);
-    if(fd>0)
-    {
-      get_fontdata(fd,fontbuf,"Æ»");
-    }
-    uint8_t temp = 0x80;
-    for(int y=0;y<32;y++)
-    {
-        if(y%2==0)
-        {
-          printf("\n");
-        } 
-        temp = 0x80;
-        for(int i=0;i<8;i++)
-        {
-          if(fontbuf[y] & temp)
-          {
-            printf("*");
-          }else
-          {
-            printf("-");
-          }
-          temp = temp>>1;
-        }
-    }
-  
-  while(1)
+  ret = mount("/dev/mmcsd0", "/mnt/sd0", "vfat", 0, NULL);
+  if (ret < 0)
   {
-   sleep(1);
-   printf("hello\n"); 
+    printf("mount failed\n");
+  }
+  else
+  {
+    printf("mount success\n");
+  }
+  fd = open("/mnt/sd0/font.bin", O_RDONLY, 0666);
+  if (fd < 0)
+  {
+    printf("fd %d\n", fd);
+    return;
+    // get_fontdata(fd, fontbuf+32, "¹û");
+  }
+
+  txtfd = open("/mnt/sd0/sanguoyanyi.txt", O_RDONLY, 0666);
+  if (txtfd < 0)
+  {
+    printf("txtfd %d\n", txtfd);
+  }
+
+  while (1)
+  {
+    memset(fontbuf, 0, 2);
+    memset(wordbuf, 0, 32);
+    ret = read(txtfd, fontbuf, 2);
+    if (fontbuf[0] == '\n' && ret!=1)
+    {
+      printf("new line\n");
+      lseek(txtfd, -1, SEEK_CUR);
+      if (pos.y + 16 <= 63)
+      {
+        pos.y += 16;
+        pos.x = 0;
+      }
+      else
+      {
+        sleep(5);
+        lcd_clr_screen();
+        pos.y = 0;
+        pos.x = 0;
+      }
+      continue;
+    }
+    if (ret == 2)
+    {
+      get_fontdata(fd, wordbuf, fontbuf);
+      lcd_chinese(pos, wordbuf);
+      if (pos.x + 16 <= 127)
+      {
+        pos.x += 16;
+      }
+      else
+      {
+        pos.x = 0;
+        if (pos.y + 16 <= 63)
+        {
+          pos.y += 16;
+        }
+        else
+        {
+          sleep(5);
+          lcd_clr_screen();
+          pos.y = 0;
+        }
+      }
+    }
+    else
+    {
+      printf("clr\n");
+      sleep(5);
+      lcd_clr_screen();
+      lseek(txtfd, 0, SEEK_SET);
+      pos.x = 0;
+      pos.y = 0;
+    }
   }
 }
 
-int get_fontdata(int fd,char *buf,char * fontcode)
+
+
+void test_lcd(void)
 {
-  uint16_t bytesperfont = 32;
-  uint32_t baseadd = 0;
-  uint32_t oft = 0;
-  uint8_t code1,code2;
-  uint16_t fontx;
+  struct nxgl_point_s pos = {20, 20};
+  lcd_init();
 
-  int ret;
-
-  fontx = *(uint16_t *)fontcode;
-  code2 = fontx >> 8;
-  code1 = fontx & 0xFF;
-
-  printf("fontx %x,code2 %x,code1 %x\n",fontx,code2,code1);
-  if( fontx < 0x80 )
+  lcd_str(pos, "hello world!");
+  while (1)
   {
-    baseadd = 0;
-    oft = fontx*bytesperfont + baseadd;
-  }else
-  {
-    baseadd = 0;
-    // code2 = c>>8;
-    // code1 = c&0xFF;
-    oft = ((code1 - 0x81)*190 + (code2-0x40) - (code2/128))*bytesperfont + baseadd;
+    sleep(1);
+    printf("hello\n");
   }
-  printf("oft %d\n",oft);
-  ret = lseek(fd,oft,SEEK_SET);
-  printf("lseek %d\n",ret);
-  ret = read(fd,buf,bytesperfont);
-  printf("read %d\n",ret);
-  return ret;
+}
+
+void uart_chinese(void *buf)
+{
+  uint8_t temp = 0x80;
+  uint8_t *fobuf = (uint8_t *)buf;
+
+  for (int y = 0; y < 32; y++)
+  {
+    if (y % 2 == 0)
+    {
+      printf("\n");
+    }
+    temp = 0x80;
+    for (int i = 0; i < 8; i++)
+    {
+      if (fobuf[y] & temp)
+      {
+        printf("*");
+      }
+      else
+      {
+        printf("-");
+      }
+      temp = temp >> 1;
+    }
+  }
 }

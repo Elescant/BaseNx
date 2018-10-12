@@ -40,7 +40,7 @@ include $(APPDIR)/Make.defs
 # NSH Library
 
 ASRCS  =
-CSRCS  = main.c
+CSRCS  = main.c lcd.c font.c
 
 CFLAGS += -std=c99
 

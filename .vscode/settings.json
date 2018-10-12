@@ -59,6 +59,8 @@
         "node.h": "c",
         "master.h": "c",
         "gateway_ui.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "stm32f103c_pinmap.h": "c",
+        "nxhello.h": "c"
     }
 }
